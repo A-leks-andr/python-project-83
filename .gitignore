@@ -1,0 +1,10 @@
+.venv
+dist
+*.cast
+__pycache__/
+.coverage
+coverage.xml
+ruff.toml
+.env
+.env.local
+main.py
