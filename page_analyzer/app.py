@@ -16,10 +16,11 @@ from flask import (
 )
 
 load_dotenv()
-
 app = Flask(__name__)
+
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 DATABASE_URL = os.getenv("DATABASE_URL")
+conn = psycopg2.connect(DATABASE_URL)
 
 
 @app.route("/")
