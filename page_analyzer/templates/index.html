@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block content %}
+<div id="center">
+    <div class="container">
+        <p id="first">Анализатор страниц</p>
+        <p id="second">Бесплатно проверяйте сайты на SEO-пригодность</p>
+        <form action="" method="post">
+            <input type="text" name="url" aria-label="Url для проверки" 
+			placeholder="https://www.example.com" value="{{ url }}"
+                class="input_form" required="">
+            <input type="submit" class="sub_form" value="Проверить">
+        </form>
+    </div>
+</div>
+{% endblock %}
