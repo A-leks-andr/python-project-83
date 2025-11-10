@@ -20,5 +20,5 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 @app.route("/")
 def index():
-	return "<h2>Welcome hexlet!!!</h2>"
+	return render_template('index.html')
 
