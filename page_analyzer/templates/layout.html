@@ -9,16 +9,25 @@
 </head>
 
 <body>
-  <header>
+  <header class="top_1">
     <nav>
 		<a href="{{ url_for('index') }}">Анализатор страниц</a>
 		<a href="">Сайты</a>
     </nav>
   </header>
-  
+  {% if errors %}
+  {% for _, error in errors.items() %}
+  <div class="top_2">{{ error}}</div>
+  {% endfor %}
+  {% endif %}
+  {% if messages %}
+  {% for category, message in messages %}
+  <div class="top_2">{{ message }}</div>
+  {% endfor %}
+  {% endif %}
   <main>
-    <div>
-      
+    <div class="container_lg">
+		<h1 class="center_show">{% block title %}{% endblock %}</h1>
       {% block content %}{% endblock %}
     </div>
   </main>
