@@ -3,17 +3,25 @@ body {
 	padding: 0;
 }
 
-header {
+.top_1 {
 	background: #000;
 	margin: 0;
 	padding: 5px 15px;
 	color: #fff;
 }
 
-header a {
+.top_2 {
+	background: #b3dcf3;
+	margin: 0;
+	padding: 15px 25px;
+	color: #000;
+}
+
+.top_1 a {
 	color: #fff;
 	font-size: 20px;
 	text-decoration: none;
+	color: #fff;
 }
 
  nav {
@@ -26,7 +34,7 @@ header a {
     }
 
 #center {
-  width: 80%;
+  width: 100%;
   max-width: 600px;
   margin: 40px auto;
   
@@ -34,6 +42,13 @@ header a {
   background-color: #f9f9f9;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.center {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px;
 }
 
 .container {
@@ -80,4 +95,26 @@ form {
     border-radius: 8px;
     cursor: pointer;
     margin-top: 10px;
+}
+
+table {
+  width: 100%;
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+
+td, th {
+  border: 1px solid black;
+  padding: 10px;
+}
+
+.center_show {
+	width: 90%;
+	max-width: 1200px;
+	margin: 10px auto;
+}
+
+.container_lg {
+	width: 90%;
+	margin: 0 auto;
 }
