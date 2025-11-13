@@ -43,10 +43,40 @@ class Url_Repository:
         with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("SELECT * FROM urls WHERE id = %s", (url_id,))
             row = cur.fetchone()
-            self.conn.commit()
             return URL(**row) if row else None
 
-    def get_checks_for_urls(self, url_id):
+    def get_checks_for_url(self, url_id):
         with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute("SELECT * FROM url_checks")
+            cur.execute('''SELECT *
+                        FROM url_checks
+                        WHERE url_id = %s
+                        ''', (url_id,))
+            return [URLCheck(**row) for row in cur]
+
+    def create_url_check(self, url_check):
+        with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute('''INSERT INTO url_checks (
+                        url_id, status_code, h1, title,
+                        description, created_at)
+                        VALUES (%s, %s, %s, %s, %s, %s)
+                        RETURNING id''',
+                        (url_check.url_id,
+                         url_check.status_code,
+                         url_check.h1,
+                         url_check.title,
+                         url_check.description,
+                         url_check.created_at,))  # noqa: E11
+            res = cur.fetchone()
+            url_check.id = res['id']
+            self.conn.commit()
+        return url_check
+
+    def get_all_urls(self):
+        with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute('SELECT * FROM urls')
+            return [URL(**row) for row in cur]
+
+    def get_all_checks(self):
+        with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute('SELECT * FROM url_checks')
             return [URLCheck(**row) for row in cur]
