@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block title %}Сайты{% endblock %}
+{% block content %}
+<div>
+  <table data-test="urls">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Имя</th>
+        <th>Последняя проверка</th>
+        <th>Код ответа</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in urls %}
+      <tr>
+        <td>{{ row.url.id }}</td>
+        <td>
+          <a href="{{ url_for('urls_show', id=row.url.id) }}">
+            {{ row.url.name }}
+          </a>
+        </td>
+        <td>{{ row.url_check.created_at.date() if row.url_check.created_at }}</td>
+        <td>{{ row.url_check.status_code if row.url_check.status_code }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
