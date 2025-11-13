@@ -18,6 +18,7 @@ from flask import (
 
 from page_analyzer.url_utils import normalize_url, validate_url
 from page_analyzer.db import Url_Repository, get_db
+from page_analyzer.date import URLCheck, URL
 
 load_dotenv()
 
@@ -75,8 +76,41 @@ def urls_show(id):
         url = repo.get_url_by_id(id)
         if not url:
             abort(404)
-        url_check = repo.get_checks_for_urls(id)
+        url_check = repo.get_checks_for_url(id)
     messages = get_flashed_messages(with_categories=True)
     return render_template(
         "show.html", url=url, checks=url_check, messages=messages
     )
+
+@app.route('/urls/<int:id>/checks', methods=['POST'])
+def checks_post(id):
+    with get_repo() as repo:
+        url = repo.get_url_by_id(id)
+        if not url:
+            abort(404)
+        url_check = URLCheck(
+            url_id=id,
+            h1='',
+            title='',
+            description='',
+            status_code=None
+        )
+        with get_repo() as repo:
+            repo.create_url_check(url_check)
+            flash('Страница успешно проверена', 'succes')
+        return redirect(url_for('urls_show', id=id))
+
+@app.route('/list_urls')
+def get_urls_list():
+    with get_repo() as repo:
+        all_urls: list[URL] = repo.get_all_urls()
+        latest_url_checks: dict[int, URLCheck] = {
+            i.url_id: i for i in sorted(
+                repo.get_all_checks(),
+                key=lambda x: (x.id, x.created_at)
+            )
+        }
+    return render_template('list.html',
+                            urls=[{'url': url,
+                                   'url_check': latest_url_checks.get(url.id)}
+                                   for url in all_urls])  # noqa: E111
