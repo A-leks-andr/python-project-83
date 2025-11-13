@@ -21,7 +21,7 @@
 </div>
 
 <h2 class="center_show">Проверки</h2>
-<form method="post" action="" class="center_show">
+<form method="post" action="{{ url_for('checks_post', id=url.id) }}" class="center_show">
   <input type="submit" class="sub_form" value="Запустить проверку">
 </form>
 
