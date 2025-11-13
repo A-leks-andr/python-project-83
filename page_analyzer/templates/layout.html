@@ -8,11 +8,11 @@
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
 </head>
 
-<body>
+<body class="vh-100">
   <header class="top_1">
     <nav>
 		<a href="{{ url_for('index') }}">Анализатор страниц</a>
-		<a href="">Сайты</a>
+		<a href="{{ url_for('get_urls_list')}}">Сайты</a>
     </nav>
   </header>
   {% if errors %}
