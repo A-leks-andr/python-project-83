@@ -64,6 +64,9 @@ def urls_post():
         url = repo.get_url_by_name(url_normalized)
         if not url:
             url = repo.create_url(url_normalized)
+            if not url:
+                flash("Не удалось добавить страницу", "error")
+                return redirect(url_for("index"))
             flash("Страница успешно добавлена", "success")
         else:
             flash("Страница уже существует", "info")
@@ -82,35 +85,41 @@ def urls_show(id):
         "show.html", url=url, checks=url_check, messages=messages
     )
 
-@app.route('/urls/<int:id>/checks', methods=['POST'])
+
+@app.route("/urls/<int:id>/checks", methods=["POST"])
 def checks_post(id):
     with get_repo() as repo:
         url = repo.get_url_by_id(id)
         if not url:
             abort(404)
         url_check = URLCheck(
-            url_id=id,
-            h1='',
-            title='',
-            description='',
-            status_code=None
+            url_id=id, h1="", title="", description="", status_code=0
         )
         with get_repo() as repo:
             repo.create_url_check(url_check)
-            flash('Страница успешно проверена', 'succes')
-        return redirect(url_for('urls_show', id=id))
+            flash("Страница успешно проверена", "success")
+        return redirect(url_for("urls_show", id=id))
 
-@app.route('/list_urls')
+
+@app.route("/list_urls")
 def get_urls_list():
     with get_repo() as repo:
         all_urls: list[URL] = repo.get_all_urls()
         latest_url_checks: dict[int, URLCheck] = {
-            i.url_id: i for i in sorted(
-                repo.get_all_checks(),
-                key=lambda x: (x.id, x.created_at)
+            i.url_id: i
+            for i in sorted(
+                repo.get_all_checks(), key=lambda x: (x.id, x.created_at)
             )
         }
-    return render_template('list.html',
-                            urls=[{'url': url,
-                                   'url_check': latest_url_checks.get(url.id)}
-                                   for url in all_urls])  # noqa: E111
+    return render_template(
+        "list.html",
+        urls=[
+            {
+                "url": url,
+                "url_check": latest_url_checks.get(url.id)
+                if url.id is not None
+                else None,
+            }
+            for url in all_urls
+        ],
+    )  # noqa: E111
