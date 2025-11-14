@@ -8,3 +8,4 @@ ruff.toml
 .env
 .env.local
 main.py
+.vscode
