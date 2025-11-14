@@ -1,8 +1,8 @@
 import os
-import psycopg2
 from contextlib import contextmanager
 
-
+import psycopg2
+import requests
 from dotenv import load_dotenv
 from flask import (
     Flask,
@@ -15,10 +15,11 @@ from flask import (
     request,
     url_for,
 )
+from requests.exceptions import RequestException, Timeout
 
-from page_analyzer.url_utils import normalize_url, validate_url
+from page_analyzer.date import URL, URLCheck
 from page_analyzer.db import Url_Repository, get_db
-from page_analyzer.date import URLCheck, URL
+from page_analyzer.url_utils import normalize_url, validate_url
 
 load_dotenv()
 
@@ -92,9 +93,25 @@ def checks_post(id):
         url = repo.get_url_by_id(id)
         if not url:
             abort(404)
+        code = 0
+        error_message = None
+        try:
+            resp = requests.get(url.name, timeout=10)
+            if resp:
+                status_code = resp.status_code
+                if status_code < 500:
+                    code = status_code
+        except Timeout:
+            error_message = f'Ошибка: Превышен тайм-аут при запросе к {url.name}'
+        except RequestException as e:
+            error_message = f'Ошибка запроса к {url.name}: {e}'
+        if error_message:
+            flash(error_message, 'error')
+            return redirect(url_for("urls_show", id=id))
+
         url_check = URLCheck(
-            url_id=id, h1="", title="", description="", status_code=0
-        )
+            url_id=id, h1="", title="", description="", status_code=code
+            )
         with get_repo() as repo:
             repo.create_url_check(url_check)
             flash("Страница успешно проверена", "success")
