@@ -98,11 +98,11 @@ def checks_post(id):
         resp = get(url.name, app.logger)
 
         if resp is None:
-            flash("Не удалось получить ответ от сервера", 'error')
+            flash("Не удалось получить ответ от сервера", "error")
             return redirect(url_for("urls_show", id=id))
 
         elif isinstance(resp, ErrorResponse):
-            flash(resp.error, 'error')
+            flash(resp.error, "error")
             return redirect(url_for("urls_show", id=id))
 
         h1, title, description = get_seo_content(resp.content, app.logger)
@@ -112,8 +112,8 @@ def checks_post(id):
             h1=h1 or "",
             title=title or "",
             description=description or "",
-            status_code=resp.status_code
-            )
+            status_code=resp.status_code,
+        )
         with get_repo() as repo:
             repo.create_url_check(url_check)
             flash("Страница успешно проверена", "success")
