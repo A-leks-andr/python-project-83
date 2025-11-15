@@ -1,7 +1,9 @@
+from typing import Optional
+
 import psycopg2
 import psycopg2.extensions
 from psycopg2.extras import RealDictCursor
-from typing import Optional, Dict, Any
+
 from .date import URL, URLCheck
 
 
@@ -80,7 +82,7 @@ class Url_Repository:
                     url_check.description,
                     url_check.created_at,
                 ),
-            )  # noqa: E11
+            )
             res = cur.fetchone()
             if res is None:
                 raise RuntimeError(
