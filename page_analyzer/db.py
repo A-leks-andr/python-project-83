@@ -61,6 +61,7 @@ class Url_Repository:
                 """SELECT *
                         FROM url_checks
                         WHERE url_id = %s
+                        ORDER BY id DESC
                         """,
                 (url_id,),
             )
@@ -94,10 +95,10 @@ class Url_Repository:
 
     def get_all_urls(self):
         with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute("SELECT * FROM urls")
+            cur.execute("SELECT * FROM urls ORDER BY id DESC")
             return [URL(**row) for row in cur]
 
     def get_all_checks(self):
         with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute("SELECT * FROM url_checks")
+            cur.execute("SELECT * FROM url_checks ORDER BY id DESC")
             return [URLCheck(**row) for row in cur]
