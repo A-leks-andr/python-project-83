@@ -8,6 +8,8 @@ def normalize_url(url):
 
     scheme = parsed.scheme.lower()
     netloc = parsed.netloc.lower()
+    if ':' in netloc:
+        netloc = netloc.split(':', 1)[0]
 
     return f"{scheme}://{netloc}"
 
