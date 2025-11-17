@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import date
+from typing import Optional
 
 
 @dataclass
@@ -9,16 +10,12 @@ class URLCheck:
     h1: str
     title: str
     description: str
-    created_at: datetime = field(
-        default_factory=lambda: datetime.now(timezone.utc)
-    )
+    created_at: Optional[date] = field(default=None, init=False)
     id: int | None = None
 
 
 @dataclass
 class URL:
     name: str
-    created_at: datetime = field(
-        default_factory=lambda: datetime.now(timezone.utc)
-    )
+    created_at: Optional[date] = field(default=None, init=False)
     id: int | None = None
