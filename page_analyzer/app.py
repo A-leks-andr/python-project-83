@@ -52,13 +52,13 @@ def index():
 def urls_post():
     url_data = request.form.to_dict()
     url_name = url_data.get("url")
-
+    errors = {}
     if not url_name:
         flash("URL не может быть пустым", "error")
         return redirect(url_for("index"))
 
     if not validate(url_name):
-        errors = 'Неправильный адрес'
+        errors['error'] = 'Некорректный URL'
         return render_template("index.html", url=url_name, errors=errors), 422
 
     url_normalized = normalize_url(url_name)
