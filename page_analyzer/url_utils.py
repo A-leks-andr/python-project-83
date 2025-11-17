@@ -1,6 +1,12 @@
 from urllib.parse import urlparse
 
-from validators.url import url as is_url
+
+def validate(url):
+    try:
+        result = urlparse(url)
+        return (result.scheme in ["http", "https"]) and bool(result.netloc)
+    except (AttributeError, TypeError, ValueError):
+        return False
 
 
 def normalize_url(url):
@@ -14,9 +20,3 @@ def normalize_url(url):
     return f"{scheme}://{netloc}"
 
 
-def validate_url(url):
-    errors = {}
-    if not is_url(url) or len(url) > 255:
-        errors["name"] = "Некорректный URL"
-
-    return errors
