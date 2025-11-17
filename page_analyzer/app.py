@@ -13,14 +13,14 @@ from flask import (
     url_for,
 )
 
-from page_analyzer.date import URL, URLCheck
+from page_analyzer.date import URLCheck
 from page_analyzer.db import Url_Repository, get_db
 from page_analyzer.parser_handler import (
     ErrorResponse,
     get,
     get_seo_content,
 )
-from page_analyzer.url_utils import normalize_url, validate_url
+from page_analyzer.url_utils import normalize_url, validate
 
 load_dotenv()
 
@@ -57,8 +57,8 @@ def urls_post():
         flash("URL не может быть пустым", "error")
         return redirect(url_for("index"))
 
-    errors = validate_url(url_name)
-    if errors:
+    if not validate(url_name):
+        errors = 'Неправильный адрес'
         return render_template("index.html", url=url_name, errors=errors), 422
 
     url_normalized = normalize_url(url_name)
@@ -95,7 +95,7 @@ def checks_post(id):
         if not url:
             abort(404)
 
-        resp = get(url.name, app.logger)
+        resp = get(url.name)
 
         if resp is None:
             flash("Не удалось получить ответ от сервера", "error")
@@ -105,7 +105,7 @@ def checks_post(id):
             flash(resp.error, "error")
             return redirect(url_for("urls_show", id=id))
 
-        h1, title, description = get_seo_content(resp.content, app.logger)
+        h1, title, description = get_seo_content(resp.content)
 
         url_check = URLCheck(
             url_id=id,
@@ -123,22 +123,5 @@ def checks_post(id):
 @app.route("/list_urls")
 def get_urls_list():
     with get_repo() as repo:
-        all_urls: list[URL] = repo.get_all_urls()
-        latest_url_checks: dict[int, URLCheck] = {
-            i.url_id: i
-            for i in sorted(
-                repo.get_all_checks(), key=lambda x: (x.id, x.created_at)
-            )
-        }
-    return render_template(
-        "list.html",
-        urls=[
-            {
-                "url": url,
-                "url_check": latest_url_checks.get(url.id)
-                if url.id is not None
-                else None,
-            }
-            for url in all_urls
-        ],
-    )  # noqa: E111
+        urls = repo.get_urls_list()
+        return render_template('list.html', urls=urls)
