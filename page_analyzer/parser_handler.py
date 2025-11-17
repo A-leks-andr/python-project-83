@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Optional, Tuple
 
 import requests
+from requests.exceptions import RequestException
 from bs4 import BeautifulSoup
 
 
@@ -17,40 +18,16 @@ class ErrorResponse:
     status_code: Optional[int] = None
 
 
-def get(url_name: str) -> Optional[Response | ErrorResponse]:
+def get(url_name):
     try:
-        resp = requests.get(url_name, timeout=10.0)
-
-        if resp.status_code >= 400:
-            return ErrorResponse(
-                error=f"HTTP error {resp.status_code}: {resp.reason}",
-                status_code=resp.status_code,
-            )
-        try:
-            content_str = resp.content.decode("utf-8")
-        except UnicodeDecodeError:
-            try:
-                content_str = resp.content.decode("windows=1251")
-            except UnicodeDecodeError:
-                content_str = resp.content.decode("latin-1")
-
-        return Response(content=content_str, status_code=resp.status_code)
-
-    except requests.exceptions.Timeout:
-        return ErrorResponse(error="Request timeout (10s)")
-
-    except requests.exceptions.ConnectionError as e:
-        return ErrorResponse(error=f"Connection error: {str(e)}")
-
-    except requests.exceptions.HTTPError as e:
-        return ErrorResponse(error=f"HTTP error: {str(e)}")
-
-    except requests.exceptions.RequestException as e:
-        return ErrorResponse(error=f"Request failed: {str(e)}")
-
-    except Exception as e:
-        return ErrorResponse(error=f"Unexpected error: {str(e)}")
-
+        resp = requests.get(url_name, timeout=10)
+        resp.raise_for_status()
+        return Response(
+            content=resp.content.decode('utf-8'),
+            status_code=resp.status_code
+        )
+    except RequestException:
+        return None
 
 SEOContent = Tuple[Optional[str], Optional[str], Optional[str]]
 
