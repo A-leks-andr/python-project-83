@@ -127,3 +127,7 @@ td, th {
 	color: #0044ff;
 	font-size: 18px;
 }
+
+.error {
+	background: #f8d7da;
+}
