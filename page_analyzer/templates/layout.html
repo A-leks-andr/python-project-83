@@ -17,7 +17,7 @@
   </header>
   {% if errors %}
   {% for _, error in errors.items() %}
-  <div class="top_2">{{ error}}</div>
+  <div class="top_2 error">{{ error }}</div>
   {% endfor %}
   {% endif %}
   {% if messages %}
