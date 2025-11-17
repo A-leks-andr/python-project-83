@@ -52,13 +52,13 @@ def index():
 def urls_post():
     url_data = request.form.to_dict()
     url_name = url_data.get("url")
-    errors = {}
     if not url_name:
         flash("URL не может быть пустым", "error")
         return redirect(url_for("index"))
 
     if not validate(url_name):
-        errors['error'] = 'Некорректный URL'
+        flash('Некорректный URL', 'error')
+        errors = get_flashed_messages(category_filter=['error'])
         return render_template("index.html", url=url_name, errors=errors), 422
 
     url_normalized = normalize_url(url_name)
@@ -69,9 +69,9 @@ def urls_post():
             if not url:
                 flash("Не удалось добавить страницу", "error")
                 return redirect(url_for("index"))
-            flash("Страница успешно добавлена", "success")
+            flash("Страница успешно добавлена", "message")
         else:
-            flash("Страница уже существует", "info")
+            flash("Страница уже существует", "message")
         return redirect(url_for("urls_show", id=url.id))
 
 
@@ -82,10 +82,14 @@ def urls_show(id):
         if not url:
             abort(404)
         url_check = repo.get_checks_for_url(id)
-    messages = get_flashed_messages(with_categories=True)
+
+    flashed_messages = get_flashed_messages(with_categories=True)
+    print(flashed_messages)
+    errors = get_flashed_messages(category_filter=['error'])
+    messages = get_flashed_messages(category_filter=['message'])
     return render_template(
-        "show.html", url=url, checks=url_check, messages=messages
-    )
+        "show.html", url=url, checks=url_check,
+        messages=messages, errors=errors)
 
 
 @app.route("/urls/<int:id>/checks", methods=["POST"])
@@ -98,11 +102,12 @@ def checks_post(id):
         resp = get(url.name)
 
         if resp is None:
-            flash("Не удалось получить ответ от сервера", "error")
+            flash("Произошла ошибка при проверке", "error")
             return redirect(url_for("urls_show", id=id))
 
         elif isinstance(resp, ErrorResponse):
-            flash(resp.error, "error")
+            errors = {}
+            errors['error'] = (resp.error, "error")
             return redirect(url_for("urls_show", id=id))
 
         h1, title, description = get_seo_content(resp.content)
@@ -116,7 +121,7 @@ def checks_post(id):
         )
         with get_repo() as repo:
             repo.create_url_check(url_check)
-            flash("Страница успешно проверена", "success")
+            flash("Страница успешно проверена", "message")
         return redirect(url_for("urls_show", id=id))
 
 
