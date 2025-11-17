@@ -122,3 +122,8 @@ td, th {
 	width: 90%;
 	margin: 0 auto;
 }
+
+.a_blue {
+	color: #0044ff;
+	font-size: 18px;
+}
