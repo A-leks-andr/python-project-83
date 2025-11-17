@@ -4,7 +4,7 @@ import psycopg2
 import psycopg2.extensions
 from psycopg2.extras import RealDictCursor
 
-from .date import URL, URLCheck
+from page_analyzer.date import URL, URLCheck
 
 
 def get_db(app) -> psycopg2.extensions.connection:
@@ -30,17 +30,21 @@ class Url_Repository:
         with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("SELECT * FROM urls WHERE name = %s", (name,))
             row = cur.fetchone()
-            return URL(**row) if row else None
+            if row:
+                url = URL(name=row['name'], id=row['id'])
+                url.created_at = row['created_at']
+                return url
+            return None
 
     def create_url(self, name: str) -> Optional[URL]:
         url_obj = URL(name)
         with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute(
                 """
-                INSERT INTO urls (name, created_at)
-                VALUES (%s, %s)
+                INSERT INTO urls (name)
+                VALUES (%s)
                 RETURNING id""",
-                (url_obj.name, url_obj.created_at),
+                (url_obj.name,),
             )
             res = cur.fetchone()
             if res is None:
@@ -53,7 +57,11 @@ class Url_Repository:
         with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("SELECT * FROM urls WHERE id = %s", (url_id,))
             row = cur.fetchone()
-            return URL(**row) if row else None
+            if row:
+                url = URL(name=row['name'], id=row['id'])
+                url.created_at = row['created_at']
+                return url
+            return None
 
     def get_checks_for_url(self, url_id):
         with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
@@ -65,15 +73,25 @@ class Url_Repository:
                         """,
                 (url_id,),
             )
-            return [URLCheck(**row) for row in cur]
+            rows = cur.fetchall()
+            if rows:
+                urlcheck = []
+                for row in rows:
+                    created_at = row['created_at']
+                    del row['created_at']
+                    check = URLCheck(**row)
+                    check.created_at = created_at
+                    urlcheck.append(check)
+                return urlcheck
+            return None
 
     def create_url_check(self, url_check):
         with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute(
                 """INSERT INTO url_checks (
                         url_id, status_code, h1, title,
-                        description, created_at)
-                        VALUES (%s, %s, %s, %s, %s, %s)
+                        description)
+                        VALUES (%s, %s, %s, %s, %s)
                         RETURNING id""",
                 (
                     url_check.url_id,
@@ -81,7 +99,6 @@ class Url_Repository:
                     url_check.h1,
                     url_check.title,
                     url_check.description,
-                    url_check.created_at,
                 ),
             )
             res = cur.fetchone()
@@ -102,3 +119,25 @@ class Url_Repository:
         with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("SELECT * FROM url_checks ORDER BY id DESC")
             return [URLCheck(**row) for row in cur]
+
+    def get_urls_list(self):
+        sql = '''
+        SELECT
+            u.id,
+            u.name,
+            uc.created_at AS last_check_created_at,
+            uc.status_code
+        FROM urls AS u
+        LEFT JOIN (
+        SELECT
+            url_id,
+            created_at,
+            status_code,
+            ROW_NUMBER() OVER (PARTITION BY url_id ORDER BY created_at DESC) AS rn
+        FROM url_checks) 
+        AS uc ON u.id = uc.url_id AND uc.rn = 1
+        ORDER BY last_check_created_at DESC NULLS LAST'''
+        with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute(sql)
+            urls = cur.fetchall()
+        return urls
