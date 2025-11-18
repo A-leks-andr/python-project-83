@@ -125,7 +125,7 @@ def checks_post(id):
         return redirect(url_for("urls_show", id=id))
 
 
-@app.route("/list_urls")
+@app.route("/urls")
 def get_urls_list():
     with get_repo() as repo:
         urls = repo.get_urls_list()
