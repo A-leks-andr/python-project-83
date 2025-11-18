@@ -14,7 +14,7 @@ from flask import (
 )
 
 from page_analyzer.date import URLCheck
-from page_analyzer.db import Url_Repository, get_db
+from page_analyzer.db import UrlRepository, get_db
 from page_analyzer.parser_handler import (
     ErrorResponse,
     get,
@@ -32,7 +32,7 @@ app.config["DATABASE_URL"] = os.getenv("DATABASE_URL")
 @contextmanager
 def get_repo():
     conn = get_db(app)
-    repo = Url_Repository(conn)
+    repo = UrlRepository(conn)
     try:
         yield repo
         conn.commit()
