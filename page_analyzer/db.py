@@ -11,7 +11,7 @@ def get_db(app) -> psycopg2.extensions.connection:
     return psycopg2.connect(app.config["DATABASE_URL"])
 
 
-class Url_Repository:
+class UrlRepository:
     def __init__(self, conn: psycopg2.extensions.connection):
         self._conn = conn
 
