@@ -31,8 +31,8 @@ class Url_Repository:
             cur.execute("SELECT * FROM urls WHERE name = %s", (name,))
             row = cur.fetchone()
             if row:
-                url = URL(name=row['name'], id=row['id'])
-                url.created_at = row['created_at']
+                url = URL(name=row["name"], id=row["id"])
+                url.created_at = row["created_at"]
                 return url
             return None
 
@@ -58,8 +58,8 @@ class Url_Repository:
             cur.execute("SELECT * FROM urls WHERE id = %s", (url_id,))
             row = cur.fetchone()
             if row:
-                url = URL(name=row['name'], id=row['id'])
-                url.created_at = row['created_at']
+                url = URL(name=row["name"], id=row["id"])
+                url.created_at = row["created_at"]
                 return url
             return None
 
@@ -77,8 +77,8 @@ class Url_Repository:
             if rows:
                 urlcheck = []
                 for row in rows:
-                    created_at = row['created_at']
-                    del row['created_at']
+                    created_at = row["created_at"]
+                    del row["created_at"]
                     check = URLCheck(**row)
                     check.created_at = created_at
                     urlcheck.append(check)
@@ -121,7 +121,7 @@ class Url_Repository:
             return [URLCheck(**row) for row in cur]
 
     def get_urls_list(self):
-        sql = '''
+        sql = """
         SELECT
             u.id,
             u.name,
@@ -133,10 +133,12 @@ class Url_Repository:
             url_id,
             created_at,
             status_code,
-            ROW_NUMBER() OVER (PARTITION BY url_id ORDER BY created_at DESC) AS rn
+            ROW_NUMBER() OVER (
+            PARTITION BY url_id ORDER BY created_at DESC
+            ) AS rn
         FROM url_checks) 
         AS uc ON u.id = uc.url_id AND uc.rn = 1
-        ORDER BY last_check_created_at DESC NULLS LAST'''
+        ORDER BY last_check_created_at DESC NULLS LAST"""
         with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute(sql)
             urls = cur.fetchall()
