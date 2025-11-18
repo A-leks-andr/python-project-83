@@ -57,8 +57,8 @@ def urls_post():
         return redirect(url_for("index"))
 
     if not validate(url_name):
-        flash('Некорректный URL', 'error')
-        errors = get_flashed_messages(category_filter=['error'])
+        flash("Некорректный URL", "error")
+        errors = get_flashed_messages(category_filter=["error"])
         return render_template("index.html", url=url_name, errors=errors), 422
 
     url_normalized = normalize_url(url_name)
@@ -85,11 +85,11 @@ def urls_show(id):
 
     flashed_messages = get_flashed_messages(with_categories=True)
     print(flashed_messages)
-    errors = get_flashed_messages(category_filter=['error'])
-    messages = get_flashed_messages(category_filter=['message'])
+    errors = get_flashed_messages(category_filter=["error"])
+    messages = get_flashed_messages(category_filter=["message"])
     return render_template(
-        "show.html", url=url, checks=url_check,
-        messages=messages, errors=errors)
+        "show.html", url=url, checks=url_check, messages=messages, errors=errors
+    )
 
 
 @app.route("/urls/<int:id>/checks", methods=["POST"])
@@ -107,7 +107,7 @@ def checks_post(id):
 
         elif isinstance(resp, ErrorResponse):
             errors = {}
-            errors['error'] = (resp.error, "error")
+            errors["error"] = (resp.error, "error")
             return redirect(url_for("urls_show", id=id))
 
         h1, title, description = get_seo_content(resp.content)
@@ -129,4 +129,4 @@ def checks_post(id):
 def get_urls_list():
     with get_repo() as repo:
         urls = repo.get_urls_list()
-        return render_template('list.html', urls=urls)
+        return render_template("list.html", urls=urls)
