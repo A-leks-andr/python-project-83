@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from typing import Optional, Tuple
 
 import requests
-from requests.exceptions import RequestException
 from bs4 import BeautifulSoup
+from requests.exceptions import RequestException
 
 
 @dataclass
@@ -23,11 +23,11 @@ def get(url_name):
         resp = requests.get(url_name, timeout=10)
         resp.raise_for_status()
         return Response(
-            content=resp.content.decode('utf-8'),
-            status_code=resp.status_code
+            content=resp.content.decode("utf-8"), status_code=resp.status_code
         )
     except RequestException:
         return None
+
 
 SEOContent = Tuple[Optional[str], Optional[str], Optional[str]]
 
