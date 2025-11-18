@@ -25,7 +25,6 @@ body {
 	color: #fff;
 	font-size: 20px;
 	text-decoration: none;
-	color: #fff;
 }
 
  nav {
@@ -93,7 +92,7 @@ form {
 	height: 50px;
     font-size: 18px;
     padding: 0 25px;
-    background-color: #007bff;
+    background-color: #0358b3;
     color: white;
     border: none;
     border-radius: 8px;
