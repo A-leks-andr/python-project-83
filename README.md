@@ -2,7 +2,7 @@
 [![Actions Status](https://github.com/A-leks-andr/python-project-83/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/A-leks-andr/python-project-83/actions)
 
 # Page Analyzer
-[Page Analyzer](https://python-project-83-6r2e.onrender.com") is a site that analyzes the specified pages for SEO suitability:
+[Page Analyzer](https://python-project-83-6r2e.onrender.com) is a site that analyzes the specified pages for SEO suitability:
 
 ## Access
 Application is deployed to [render.com](https://render.com/)
