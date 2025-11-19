@@ -13,14 +13,14 @@ from flask import (
     url_for,
 )
 
-from page_analyzer.date import URLCheck
 from page_analyzer.db import UrlRepository, get_db
-from page_analyzer.parser_handler import (
+from page_analyzer.models import URLCheck
+from page_analyzer.parser import (
     ErrorResponse,
     get,
     get_seo_content,
 )
-from page_analyzer.url_utils import normalize_url, validate
+from page_analyzer.validators import normalize_url, validate
 
 load_dotenv()
 
