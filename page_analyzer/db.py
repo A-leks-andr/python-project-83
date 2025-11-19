@@ -4,7 +4,7 @@ import psycopg2
 import psycopg2.extensions
 from psycopg2.extras import RealDictCursor
 
-from page_analyzer.date import URL, URLCheck
+from page_analyzer.models import URL, URLCheck
 
 
 def get_db(app) -> psycopg2.extensions.connection:
