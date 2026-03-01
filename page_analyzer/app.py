@@ -45,11 +45,13 @@ def get_repo():
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    user_ip = request.remote_addr
+    return render_template("index.html", ip=user_ip)
 
 
 @app.route("/urls", methods=["POST"])
 def urls_post():
+    user_ip = request.remote_addr
     url_data = request.form.to_dict()
     url_name = url_data.get("url")
     if not url_name:
@@ -59,7 +61,9 @@ def urls_post():
     if not validate(url_name):
         flash("Некорректный URL", "error")
         errors = get_flashed_messages(category_filter=["error"])
-        return render_template("index.html", url=url_name, errors=errors), 422
+        return render_template(
+            "index.html", url=url_name, errors=errors, ip=user_ip
+            ), 422
 
     url_normalized = normalize_url(url_name)
     with get_repo() as repo:
@@ -77,6 +81,7 @@ def urls_post():
 
 @app.route("/urls/<int:id>")
 def urls_show(id):
+    user_ip = request.remote_addr
     with get_repo() as repo:
         url = repo.get_url_by_id(id)
         if not url:
@@ -88,7 +93,8 @@ def urls_show(id):
     errors = get_flashed_messages(category_filter=["error"])
     messages = get_flashed_messages(category_filter=["message"])
     return render_template(
-        "show.html", url=url, checks=url_check, messages=messages, errors=errors
+        "show.html", url=url, checks=url_check, 
+        messages=messages, errors=errors, ip=user_ip
     )
 
 
@@ -127,6 +133,7 @@ def checks_post(id):
 
 @app.route("/urls")
 def get_urls_list():
+    user_ip = request.remote_addr
     with get_repo() as repo:
         urls = repo.get_urls_list()
-        return render_template("list.html", urls=urls)
+        return render_template("list.html", urls=urls, ip=user_ip)

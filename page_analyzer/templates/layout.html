@@ -31,6 +31,13 @@
       {% block content %}{% endblock %}
     </div>
   </main>
+  <footer>
+    <div class="cellar">
+        {% if ip %}
+        <p>{{ 'Ваш IP-адрес:' ~ ip }}</p>
+        {% endif %}
+    </div>
+    </footer>
 </body>
 
 </html>

@@ -23,9 +23,9 @@ def get(url_name):
         resp = requests.get(url_name, timeout=10)
         resp.raise_for_status()
         return Response(
-            content=resp.content.decode("utf-8"), status_code=resp.status_code
+            content=resp.text, status_code=resp.status_code
         )
-    except RequestException:
+    except (requests.RequestException, Exception):
         return None
 
 
